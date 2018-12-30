@@ -1,3 +1,4 @@
+require("dotenv").config();
 const login = require("./app/login");
 const { email, password, appStateFile } = require("./config/");
 const fs = require("fs");
