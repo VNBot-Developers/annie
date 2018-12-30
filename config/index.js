@@ -1,7 +1,7 @@
 module.exports = {
     email: process.env.EMAIL || '',
     password: process.env.PASSWORD || '',
-    preset: process.env.PREFIX || '',
+    prefix: process.env.PREFIX || '',
     botName: process.env.BOT_NAME || 'Annie',
     developer: {
         uid: 100009859624773,
