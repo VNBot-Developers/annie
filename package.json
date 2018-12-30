@@ -1,0 +1,36 @@
+{
+  "name": "annie",
+  "version": "1.0.0",
+  "description": "I am Annie - A facebook messenger bot - Created by VNBot-Developers Team",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VNBot-Developers/annie.git"
+  },
+  "keywords": [
+    "bot",
+    "facebook",
+    "annie",
+    "messenger",
+    "AI"
+  ],
+  "author": "VNBot-Developers",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VNBot-Developers/annie/issues"
+  },
+  "homepage": "https://github.com/VNBot-Developers/annie#readme",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "facebook-chat-api": "^1.6.0",
+    "md5": "^2.2.1",
+    "pg": "^7.7.1",
+    "pg-hstore": "^2.3.2",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2",
+    "sequelize": "^4.42.0"
+  }
+}
