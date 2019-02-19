@@ -2,6 +2,7 @@ const md5 = require("md5");
 const request = require("request-promise").defaults({ encoding: null, timeout: 10 * 1000 });
 const fileType = require('file-type');
 const fs = require("fs");
+const root = __dirname;
 module.exports = async function(op) {
     try {
         let buffer = await request(op);
@@ -12,6 +13,6 @@ module.exports = async function(op) {
         return path;
     }
     catch (e) {
-        return e + '';
+        return Promise.reject(e);
     }
 }

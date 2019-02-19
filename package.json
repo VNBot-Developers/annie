@@ -24,8 +24,9 @@
   },
   "homepage": "https://github.com/VNBot-Developers/annie#readme",
   "dependencies": {
+    "chalk": "^2.4.2",
     "dotenv": "^6.2.0",
-    "facebook-chat-api": "^1.6.0",
+    "facebook-chat-api": "^1.6.1",
     "file-type": "^10.7.0",
     "md5": "^2.2.1",
     "pg": "^7.7.1",

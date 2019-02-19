@@ -1,5 +1,6 @@
 const moduleBuild = [
-    'saveAttachment'
+    'saveAttachment',
+    'log'
 ];
 const modules = new Object();
 moduleBuild.forEach(function(v) {
