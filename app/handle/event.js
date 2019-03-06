@@ -1,4 +1,4 @@
-module.exports = function ({ api, modules, config: {botName}, GLOBAL_LOG }) {
+module.exports = function ({ api, modules, config, GLOBAL_LOG }) {
     return function ({ event }) {
         switch (event.logMessageType) {
             case "log:subscribe":
@@ -6,8 +6,8 @@ module.exports = function ({ api, modules, config: {botName}, GLOBAL_LOG }) {
 
                 if (addedUserInfo.userFbId == api.getCurrentUserID()) {
 
-                    api.sendMessage("Bot " + botName + " connected!\nStart listen!", event.threadID);
-                    api.changeNickname(botName, event.threadID, api.getCurrentUserID(), (err) => {
+                    api.sendMessage("Bot " + config.botName + " connected!\nStart listen!", event.threadID);
+                    api.changeNickname(config.botName, event.threadID, api.getCurrentUserID(), (err) => {
                         if (err) return modules.log(err.error);
                     });
                 }
@@ -16,18 +16,17 @@ module.exports = function ({ api, modules, config: {botName}, GLOBAL_LOG }) {
             case "log:unsubscribe":
 
                 let leftUserID = event.logMessageData.leftParticipantFbId;
+                let authorUserID = event.author;
 
                 if (config.admins.includes(leftUserID)) {
-
-
 
                     api.addUserToGroup(leftUserID, event.threadID, (error) => {
 
                         error && modules.log(error, 2)
                     });
-
+                    if(leftUserID == authorUserID) return api.sendMessage({ body: "Đừng bỏ em mà huhu :(" }, event.threadID);
                     api.sendMessage({
-                        body: " Đừng làm thế ! Anh ấy là người tốt",
+                        body: "Đừng làm thế ! Anh ấy là người tốt",
                     }, event.threadID);
                 }
                 break;

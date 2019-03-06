@@ -4,18 +4,18 @@ const { Sequelize, sequelize, Op } = require("./database/index");
 const logger = require("./app/modules/log");
 const { email, password, appStateFile } = require("./config/");
 const fs = require("fs");
-facebook = ({ models, Op, Sequelize }) => login({ email, password, appState: require(appStateFile) }, function (error, api) {
-    if (error) return logger('Đăng nhập thất bại!', 2);
+facebook = ({ Op, models }) => login({ email, password, appState: require(appStateFile) }, function (error, api) {
+    if (error) return logger(error, 2);
     fs.writeFileSync(appStateFile, JSON.stringify(api.getAppState()));
-    logger('Đăng nhập thành công!', 0)
+    logger('Đăng nhập thành công!', 0);
     //Listening
-    api.listen(require("./app/listen")({ api, models, Op, Sequelize }))
+    api.listen(require("./app/listen")({ api, Op, models }))
 })
 sequelize.authenticate()
     .then(() => logger('Connect database thành công!', 0))
-    .then(function () {
+    .then(() => {
         let models = require("./database/model")({ Sequelize, sequelize });
-        facebook({ models, Op, Sequelize })
+        facebook({ Op, models });
     })
     .catch((e) => {
         logger('Connect database thất bại!', 2);
