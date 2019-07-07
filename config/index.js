@@ -21,7 +21,7 @@ module.exports = {
             storage: path.resolve(__dirname, "./data.sqlite"),
         },
     },
-    appStateFile: './appstate.json',
+    appStateFile: path.resolve(__dirname, '../appstate.json'),
     swear: {
         limit: 2
     },
