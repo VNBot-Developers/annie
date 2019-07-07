@@ -4,7 +4,7 @@
   "description": "I am Annie - A facebook messenger bot - Created by VNBot-Developers Team",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "link-module-alias"
   },
   "repository": {
     "type": "git",
@@ -35,5 +35,17 @@
     "request-promise": "^4.2.2",
     "sequelize": "^6.0.0",
     "sqlite3": "^4.0.9"
+  },
+  "devDependencies": {
+    "link-module-alias": "^1.2.0"
+  },
+  "_moduleAliasIgnoreWarning": true,
+  "_moduleAliases": {
+    "@app": "./app",
+    "@modules": "./app/modules",
+    "@logger": "./app/modules/log.js",
+    "@config": "./config",    
+    "@database": "./database",
+    "@models": "./database/models"
   }
 }
