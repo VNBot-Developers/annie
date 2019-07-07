@@ -1,3 +1,4 @@
+const path = require("path")
 module.exports = {
     development: false,
     email: process.env.EMAIL || '',
@@ -10,14 +11,19 @@ module.exports = {
         github: 'Notekunn'
     },
     database: {
-        database: process.env.DB_NAME,
-        username: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        host: process.env.DB_HOST
+        postgres: {
+            database: process.env.DB_NAME,
+            username: process.env.DB_USER,
+            password: process.env.DB_PASS,
+            host: process.env.DB_HOST,
+        },
+        sqlite: {
+            storage: path.resolve(__dirname, "./data.sqlite"),
+        },
     },
     appStateFile: './appstate.json',
     swear: {
         limit: 2
     },
-    admins: (process.env.ADMINS || '').split('_')
+    admins: (process.env.ADMINS || '').split('_'),
 }

@@ -22,6 +22,5 @@ module.exports = function ({ sequelize, Sequelize }) {
             defaultValue: Sequelize.NOW
         }
     })
-    Log.sync({ force: process.env.NODE_ENV == 'build' });
     return Log;
 }

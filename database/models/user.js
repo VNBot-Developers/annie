@@ -21,6 +21,5 @@ module.exports = function ({ sequelize, Sequelize }) {
             defaultValue: false
         }
     });
-    User.sync({ force: process.env.NODE_ENV == 'build' });
     return User;
 }

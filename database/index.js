@@ -1,12 +1,10 @@
 const Sequelize = require("sequelize");
 const {database} = require("../config/index");
-
+const dialect = process.env.DIALECT || 'sqlite';
 module.exports = {
     sequelize: new Sequelize({
-        ...database,
-        dialect: 'postgres',
-        operatorsAliases: false,
-
+        dialect,
+        ...database[dialect],
         pool: {
             max: 10,
             min: 0,
