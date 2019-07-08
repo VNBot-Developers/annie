@@ -43,8 +43,9 @@
   "_moduleAliases": {
     "@app": "./app",
     "@modules": "./app/modules",
+    "@controllers": "./app/controllers",
     "@logger": "./app/modules/log.js",
-    "@config": "./config",    
+    "@config": "./config",
     "@database": "./database",
     "@models": "./database/models"
   }

@@ -1,26 +1,16 @@
-const modules = require("./modules");
-const config = require("../config");
-const __GLOBAL = new Object({
-    threadBlocked: new Array(),
-    userBlocked: new Array(),
-    swearList: new Array()
-});
-module.exports = function ({ api, models }) {
-    let UserModel = models.use('user');
-    let ThreadModel = models.use('thread');
-    ThreadModel.findAll({ where: { block: true } })
-        .then(e => {
-            __GLOBAL.threadBlocked = e.map(e => e.get({
-                plain: true
-            }))
-        });
-
-    UserModel.findAll({ where: { block: true } })
-        .then(e => {
-            __GLOBAL.userBlocked = e.map(e => e.get({
-                plain: true
-            }))
-        })
+const modules = require("@modules");
+const config = require("@config");
+module.exports = function ({ api, models , __GLOBAL}) {
+    // const User = models.use('user');
+    // const Thread = models.use('thread');
+    const User = require("@controllers/user")({ models, api });    
+    const Thread = require("@controllers/thread")({ models, api });
+    (async function init() {
+        modules.log('Khởi tạo biến môi trường.');
+        __GLOBAL.userBlocked = (await User.getUsers({ block: true })).map(e => e.uid)
+        __GLOBAL.threadBlocked = (await Thread.getThreads({ block: true })).map(e => e.threadID)
+        modules.log('Khởi tạo biến môi trường xong.');
+    })();
     const handleMessage = require("./handle/message")({ api, modules, config, __GLOBAL });
     const handleEvent = require("./handle/event")({ api, modules, config, __GLOBAL });
     const handleMessageReaction = require("./handle/message_reaction")({ api, modules, config, __GLOBAL });
@@ -29,22 +19,22 @@ module.exports = function ({ api, models }) {
     modules.log('Bắt đầu listen!');
     return function (error, event) {
         if (error) return modules.log(error, 2);
-        console.log(event);
-        api.getUserInfo(event.senderID, (err, ret) => {
-            if (err) return console.error(err);
-
-            console.log(ret)
-        })
         switch (event.type) {
             case 'message':
-                handleMessage({ event })
+                handleMessage({ event, __GLOBAL })
                 break;
             case 'event':
-                handleEvent({ event })
+                handleEvent({ event, __GLOBAL })
                 break;
             case 'message_reaction':
-                handleMessageReaction({ event })
+                handleMessageReaction({ event, __GLOBAL })
+                break;
+            default:
+                return;
                 break;
         }
+
+        User.createUser(event.senderID);
+        Thread.createThread(event.threadID);
     }
 }
