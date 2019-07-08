@@ -1,4 +1,4 @@
-module.exports = function ({ api, modules, config, GLOBAL_LOG }) {
+module.exports = function ({ api, modules, config, __GLOBAL }) {
     return function ({ event }) {
         switch (event.logMessageType) {
             case "log:subscribe":
