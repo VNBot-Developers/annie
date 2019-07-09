@@ -1,6 +1,6 @@
 const fs = require('fs');
 module.exports = function ({ api, modules, config, __GLOBAL }) {
-    let { prefix } = config;
+    let { prefix, ENDPOINT } = config;
     return function ({ event }) {
         let { body: contentMessage, senderID, threadID } = event;
         //Resume
@@ -39,14 +39,9 @@ module.exports = function ({ api, modules, config, __GLOBAL }) {
         if (contentMessage.indexOf(`${prefix}say`) == 0) {
 
             let text = contentMessage.slice(prefix.length + 3, contentMessage.length).trim();
-            modules.saveAttachment('http://translate.google.com/translate_tts?ie=UTF-8&tl=vi&client=tw-ob&q=' + encodeURI(text))
-                .then(path => {
-                    api.sendMessage({ body: '', attachment: fs.createReadStream(path) }, threadID, () => {
-                        fs.unlinkSync(path)
-                    });
-                }).catch(e => {
-                    throw e;
-                })
+            modules.sendAttachment(ENDPOINT.GOOGLE_TTS + encodeURI(text), threadID, function(err){
+                if(err) modules.log(err, 2);
+            })
             return;
         }
     }

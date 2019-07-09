@@ -1,12 +1,11 @@
 const modules = require("@modules");
 const config = require("@config");
-module.exports = function ({ api, models , __GLOBAL}) {
-    // const User = models.use('user');
-    // const Thread = models.use('thread');
-    const User = require("@controllers/user")({ models, api });    
+module.exports = function ({ api, models, __GLOBAL }) {
+    const User = require("@controllers/user")({ models, api });
     const Thread = require("@controllers/thread")({ models, api });
     (async function init() {
         modules.log('Khởi tạo biến môi trường.');
+        modules.sendAttachment = require("@modules/sendAttachment")({ api })
         __GLOBAL.userBlocked = (await User.getUsers({ block: true })).map(e => e.uid)
         __GLOBAL.threadBlocked = (await Thread.getThreads({ block: true })).map(e => e.threadID)
         modules.log('Khởi tạo biến môi trường xong.');

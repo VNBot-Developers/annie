@@ -26,4 +26,5 @@ module.exports = {
         limit: 2
     },
     admins: (process.env.ADMINS || '').split('_'),
+    ENDPOINT: require('./api')
 }
