@@ -8,7 +8,7 @@ module.exports = function ({ api, modules, config, __GLOBAL }) {
 
                     api.sendMessage("Bot " + config.botName + " connected!\nStart listen!", event.threadID);
                     api.changeNickname(config.botName, event.threadID, api.getCurrentUserID(), (err) => {
-                        if (err) return modules.log(err.error);
+                        if (err) return modules.log(err, 2);
                     });
                 }
 
@@ -22,9 +22,9 @@ module.exports = function ({ api, modules, config, __GLOBAL }) {
 
                     api.addUserToGroup(leftUserID, event.threadID, (error) => {
 
-                        error && modules.log(error, 2)
+                        if (error) return modules.log(error, 2)
                     });
-                    if(leftUserID == authorUserID) return api.sendMessage({ body: "Đừng bỏ em mà huhu :(" }, event.threadID);
+                    if (leftUserID == authorUserID) return api.sendMessage({ body: "Đừng bỏ em mà huhu :(" }, event.threadID);
                     api.sendMessage({
                         body: "Đừng làm thế ! Anh ấy là người tốt",
                     }, event.threadID);

@@ -17,13 +17,13 @@ facebook = ({ Op, models }) => login({ email, password, appState: require(appSta
     api.listen(require("@app/listen")({ api, Op, models, __GLOBAL }))
 })
 sequelize.authenticate()
-    .then(() => logger('Connect database thành công!', 0))
+    .then(() => logger('Connect database thành công!', 0), () => logger('Connect database thất bại!', 2))
     .then(() => {
         let models = require("@database/model")({ Sequelize, sequelize });
-        facebook({ Op, models});
+        facebook({ Op, models });
     })
     .catch((e) => {
-        logger('Connect database thất bại!', 2);
-        // logger(`${e}`, 2);
-        console.error(e);
+
+        logger(`${e.stack}`, 2);
+        // console.error(e);
     })

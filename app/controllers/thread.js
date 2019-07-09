@@ -4,14 +4,19 @@ module.exports = function ({ models, api }) {
     function getThreads(where = {}) {
         return Thread.findAll({ where })
             .then(e => e.map(e => e.get({ plain: true })))
-            .catch(() => [])
+            .catch((error) => {
+                logger(error, 2);
+                return [];
+            })
     }
     function createThread(threadID) {
         Thread.findOrCreate({ where: { threadID }, defaults: {} })
             .then(([user, created]) => {
                 if (created) return logger(threadID, 'New Thread');
             })
-            .catch(e => logger(e, 2))
+            .catch((error) => {
+                logger(error, 2);
+            })
     }
     return {
         getThreads,

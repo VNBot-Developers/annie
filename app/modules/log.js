@@ -8,7 +8,7 @@ module.exports = function (data, option) {
 	if (option == -1)
 		return console.log(chalk.yellow('[ ⚠ ]:: ') + data);
 	if (option == 2)
-		return console.log(chalk.red('[ ☠ ]:: ') + data);
+		return console.log(chalk.red('[ ☠ ]:: ') + data.stack || `${data}`);
 	if (option == null || option == undefined)
 		return console.log(chalk.magenta('[ UwU ]: ') + data);
 	else
