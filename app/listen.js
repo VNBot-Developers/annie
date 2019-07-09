@@ -10,23 +10,24 @@ module.exports = function ({ api, models, __GLOBAL }) {
         __GLOBAL.threadBlocked = (await Thread.getThreads({ block: true })).map(e => e.threadID)
         modules.log('Khởi tạo biến môi trường xong.');
     })();
-    const handleMessage = require("./handle/message")({ api, modules, config, __GLOBAL });
+    const handleMessage = require("./handle/message")({ api, modules, config, __GLOBAL , User});
     const handleEvent = require("./handle/event")({ api, modules, config, __GLOBAL });
-    const handleMessageReaction = require("./handle/message_reaction")({ api, modules, config, __GLOBAL });
+    const handleMessageReaction = require("./handle/message_reaction")({ api, modules, config, __GLOBAL , User});
     modules.log(config.prefix || '<none>', '[ prefix ]');
     modules.log(`${api.getCurrentUserID()} - ${config.botName}`, '[ UID ]');
-    modules.log('Bắt đầu listen!');
+    modules.log('Bắt đầu listen!');    
     return function (error, event) {
-        if (error) return modules.log(error, 2);
+        if (error) return modules.log(error, 2);        
+        // console.log(__GLOBAL);
         switch (event.type) {
             case 'message':
-                handleMessage({ event, __GLOBAL })
+                handleMessage({ event })
                 break;
             case 'event':
-                handleEvent({ event, __GLOBAL })
+                handleEvent({ event })
                 break;
             case 'message_reaction':
-                handleMessageReaction({ event, __GLOBAL })
+                handleMessageReaction({ event })
                 break;
             default:
                 return;

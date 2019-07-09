@@ -22,11 +22,33 @@ module.exports = function ({ models, api }) {
                 })
         })
     }
-    function ban() {
-        return
+    function unban(uid, block = false) {
+        return User.findOne({
+            where: {
+                uid
+            }
+        }).then(function(user){
+            if(!user) return;
+            return user.update({
+                block
+            });
+        })
+        .then(function(){
+            return true;
+        })
+        .catch(function(error){
+            logger(error, 2);
+            return false;
+        })
+    }
+
+    function ban(uid){
+        return unban(uid, true);
     }
     return {
         getUsers,
-        createUser
+        createUser,
+        ban,
+        unban
     }
 }

@@ -7,7 +7,8 @@ const fs = require("fs");
 const __GLOBAL = new Object({
     threadBlocked: new Array(),
     userBlocked: new Array(),
-    swearList: new Array()
+    swearList: new Array(),
+    confirm: new Array(),
 });
 facebook = ({ Op, models }) => login({ email, password, appState: require(appStateFile) }, function (error, api) {
     if (error) return logger(error, 2);

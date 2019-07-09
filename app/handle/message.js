@@ -1,22 +1,109 @@
 const fs = require('fs');
-module.exports = function ({ api, modules, config, __GLOBAL }) {
-    let { prefix, ENDPOINT } = config;
+module.exports = function ({ api, modules, config, __GLOBAL, User }) {
+    let { prefix, ENDPOINT, admins } = config;
     return function ({ event }) {
         let { body: contentMessage, senderID, threadID } = event;
-        //Resume
+        senderID = parseInt(senderID);
+        threadID = parseInt(threadID);
 
-        if (__GLOBAL.userBlocked.includes(parseInt(senderID))) {
+        /* ================ BAN & UNBAN ==================== */
+
+        if (__GLOBAL.userBlocked.includes(senderID)) {
             return;
         }
-        if (__GLOBAL.threadBlocked.includes(parseInt(threadID))) {
-            if (contentMessage == `${prefix}unblock` && config.admins.includes(senderID)) {
-                let indexOfThread = __GLOBAL.threadBlocked.indexOf(threadID);
+        // Unban thread
+        if (__GLOBAL.threadBlocked.includes(threadID)) {
+            if (contentMessage == `${prefix}unban` && admins.includes(senderID)) {
+                const indexOfThread = __GLOBAL.threadBlocked.indexOf(threadID);
+                if (indexOfThread == -1) return api.sendMessage("Nhóm này đã được bỏ chặn!", threadID);
                 //Clear from blocked
                 __GLOBAL.threadBlocked.splice(indexOfThread, 1);
+                api.sendMessage("Nhóm này đã được bỏ chặn!", threadID);
                 return;
             }
-            else return;
+            return;
         }
+
+        // Unban user
+        if (contentMessage.indexOf(`${prefix}unban`) == 0 && admins.includes(senderID)) {
+            const mentions = Object.keys(event.mentions);
+            if (mentions.length == 0) return api.sendMessage('Vui lòng tag những người cần unban', threadID);
+            mentions.forEach(mention => {
+                const indexOfUser = __GLOBAL.userBlocked.indexOf(parseInt(mention));
+                if (indexOfUser == -1) return api.sendMessage({
+                    body: `${event.mentions[mention]} chưa bị ban, vui lòng ban trước!`,
+                    mentions: [{
+                        tag: event.mentions[mention],
+                        id: mention
+                    }]
+                }, threadID);
+
+                //Clear from blocked
+                __GLOBAL.userBlocked.splice(indexOfUser, 1);
+                User.unban(mention)
+                    .then(success => {
+                        if (success) return api.sendMessage({
+                            body: `Đã unban ${event.mentions[mention]}!`,
+                            mentions: [{
+                                tag: event.mentions[mention],
+                                id: mention
+                            }]
+                        }, threadID);
+                        api.sendMessage("Không thể unban người này!", threadID);
+                    })
+
+            })
+            return;
+        }
+
+        // Ban thread
+        if (contentMessage == `${prefix}ban thread` && admins.includes(senderID)) {
+
+            api.sendMessage("Bạn có chắc muốn ban group này ?", threadID, function (error, info) {
+                if (error) return modules.log(error, 2);
+                __GLOBAL.confirm.push({
+                    type: "ban:thread",
+                    messageID: info.messageID,
+                    author: senderID
+                })
+            });
+            return;
+
+        }
+        // Ban user
+        if (contentMessage.indexOf(`${prefix}ban`) == 0 && admins.includes(senderID)) {
+
+            const mentions = Object.keys(event.mentions);
+            if (mentions.length == 0) return api.sendMessage('Vui lòng tag những người cần ban!', threadID);
+            mentions.forEach(mention => {
+                if (admins.includes(mention)) return api.sendMessage('Bạn không đủ thẩm quyền để ban người này?', threadID);
+                api.sendMessage(
+                    {
+                        body: `Bạn có chắc muốn ban ${event.mentions[mention]}?`,
+                        mentions: [{
+                            tag: event.mentions[mention],
+                            id: mention
+                        }]
+                    },
+                    threadID,
+                    function (error, info) {
+                        if (error) return modules.log(error, 2);
+                        __GLOBAL.confirm.push({
+                            type: "ban:user",
+                            messageID: info.messageID,
+                            target: {
+                                tag: event.mentions[mention],
+                                id: mention
+                            },
+                            author: senderID
+                        })
+                    });
+            })
+            return;
+
+        }
+
+        /* ==================== SMTHING ================ */
 
         if (contentMessage == `${prefix}ping`) {
             api.sendMessage(`${config.botName} has already!`, threadID);
@@ -39,8 +126,8 @@ module.exports = function ({ api, modules, config, __GLOBAL }) {
         if (contentMessage.indexOf(`${prefix}say`) == 0) {
 
             let text = contentMessage.slice(prefix.length + 3, contentMessage.length).trim();
-            modules.sendAttachment(ENDPOINT.GOOGLE_TTS + encodeURI(text), threadID, function(err){
-                if(err) modules.log(err, 2);
+            modules.sendAttachment(ENDPOINT.GOOGLE_TTS + encodeURI(text), threadID, function (err) {
+                if (err) modules.log(err, 2);
             })
             return;
         }
