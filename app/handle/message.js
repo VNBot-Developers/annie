@@ -111,6 +111,10 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
         }
 
         /* ==================== SMTHING ================ */
+        if(modules.checkCrap(contentMessage)){
+            api.sendMessage(`Không đươc nói bậy!`, threadID);
+            return;
+        }
 
         if (contentMessage == `${prefix}ping`) {
             api.sendMessage(`${config.botName} has already!`, threadID);
