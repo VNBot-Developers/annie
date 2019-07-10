@@ -16,6 +16,7 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
                             if (!success) return api.sendMessage("Không thể ban group này!", threadID);
                             api.sendMessage("Nhóm này đã bị chặn tin nhắn!.", threadID);
                             __GLOBAL.threadBlocked.push(confirmMessage.target);
+                            modules.log(confirmMessage.target, 'Ban Thread');
                         })
                     break;
                 }
@@ -28,7 +29,8 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
                                 body: `${confirmMessage.target.tag} đã bị ban!`,
                                 mentions: [confirmMessage.target]
                             }, threadID);
-                            __GLOBAL.userBlocked.push(confirmMessage.target.id);
+                            __GLOBAL.userBlocked.push(confirmMessage.target.id);                            
+                            modules.log(confirmMessage.target.id, 'Ban User');
                         })
                     break;
                 }

@@ -18,10 +18,11 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
                 if (indexOfThread == -1) return api.sendMessage("Nhóm này chưa bị chặn!", threadID);
                 Thread.unban(threadID)
                     .then(success => {
+                        if (!success) return api.sendMessage("Không thể bỏ chặn nhóm này!", threadID);
+                        api.sendMessage("Nhóm này đã được bỏ chặn!", threadID);                        
                         //Clear from blocked
                         __GLOBAL.threadBlocked.splice(indexOfThread, 1);
-                        if (success) return api.sendMessage("Nhóm này đã được bỏ chặn!", threadID);
-                        api.sendMessage("Không thể bỏ chặn nhóm này!", threadID);
+                        modules.log(threadID, 'Unban Thread');
                     })
 
                 return;
@@ -43,18 +44,19 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
                     }]
                 }, threadID);
 
-                //Clear from blocked
-                __GLOBAL.userBlocked.splice(indexOfUser, 1);
                 User.unban(mention)
                     .then(success => {
-                        if (success) return api.sendMessage({
+                        if (!success) return api.sendMessage("Không thể unban người này!", threadID);
+                        api.sendMessage({
                             body: `Đã unban ${event.mentions[mention]}!`,
                             mentions: [{
                                 tag: event.mentions[mention],
                                 id: mention
                             }]
                         }, threadID);
-                        api.sendMessage("Không thể unban người này!", threadID);
+                        //Clear from blocked
+                        __GLOBAL.userBlocked.splice(indexOfUser, 1);
+                        modules.log(mentions, 'Unban User');
                     })
 
             })
@@ -111,7 +113,7 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
         }
 
         /* ==================== SMTHING ================ */
-        if(modules.checkCrap(contentMessage)){
+        if (modules.checkCrap(contentMessage)) {
             api.sendMessage(`Không đươc nói bậy!`, threadID);
             return;
         }
