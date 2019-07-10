@@ -1,4 +1,4 @@
-module.exports = function ({ api, modules, config, __GLOBAL, User }) {
+module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
     return function ({ event }) {
         const { confirm } = __GLOBAL;
         if (__GLOBAL.threadBlocked.indexOf(event.threadID) != -1) {
@@ -11,23 +11,29 @@ module.exports = function ({ api, modules, config, __GLOBAL, User }) {
             const confirmMessage = confirm[indexOfConfirm];
             switch (confirmMessage.type) {
                 case 'ban:thread': {
-                    api.sendMessage("Nhóm này đã bị chặn tin nhắn!.", threadID);
+                    Thread.ban(confirmMessage.target)
+                        .then((success) => {
+                            if (!success) return api.sendMessage("Không thể ban group này!", threadID);
+                            api.sendMessage("Nhóm này đã bị chặn tin nhắn!.", threadID);
+                            __GLOBAL.threadBlocked.push(confirmMessage.target);
+                        })
                     break;
                 }
                 case 'ban:user': {
                     User
                         .ban(confirmMessage.target.id)
-                        .then((banned) => {
-                            if (!banned) return api.sendMessage("Không thể ban người này!", threadID);
+                        .then((success) => {
+                            if (!success) return api.sendMessage("Không thể ban người này!", threadID);
                             api.sendMessage({
                                 body: `${confirmMessage.target.tag} đã bị ban!`,
                                 mentions: [confirmMessage.target]
                             }, threadID);
-                            __GLOBAL.userBlocked.push(parseInt(confirmMessage.target.id));
+                            __GLOBAL.userBlocked.push(confirmMessage.target.id);
                         })
                     break;
                 }
-            }            
+            }
+            //Xoa confirm
             __GLOBAL.confirm.splice(indexOfConfirm, 1);
             return;
         }

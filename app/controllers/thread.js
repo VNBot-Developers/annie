@@ -18,8 +18,33 @@ module.exports = function ({ models, api }) {
                 logger(error, 2);
             })
     }
+    function unban(threadID, block = false) {
+        return Thread.findOne({
+            where: {
+                threadID
+            }
+        })
+            .then(function (thread) {
+                if (!thread) return;
+                return thread.update({
+                    block
+                });
+            })
+            .then(function () {
+                return true;
+            })
+            .catch(function (error) {
+                logger(error, 2);
+                return false;
+            })
+    }
+    function ban(threadID) {
+        return unban(threadID, true);
+    }
     return {
         getThreads,
-        createThread
+        createThread,
+        ban,
+        unban
     }
 }

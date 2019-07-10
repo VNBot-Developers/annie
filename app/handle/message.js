@@ -1,5 +1,5 @@
 const fs = require('fs');
-module.exports = function ({ api, modules, config, __GLOBAL, User }) {
+module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
     let { prefix, ENDPOINT, admins } = config;
     return function ({ event }) {
         let { body: contentMessage, senderID, threadID } = event;
@@ -13,12 +13,17 @@ module.exports = function ({ api, modules, config, __GLOBAL, User }) {
         }
         // Unban thread
         if (__GLOBAL.threadBlocked.includes(threadID)) {
-            if (contentMessage == `${prefix}unban` && admins.includes(senderID)) {
+            if (contentMessage == `${prefix}unban thread` && admins.includes(senderID)) {
                 const indexOfThread = __GLOBAL.threadBlocked.indexOf(threadID);
-                if (indexOfThread == -1) return api.sendMessage("Nhóm này đã được bỏ chặn!", threadID);
-                //Clear from blocked
-                __GLOBAL.threadBlocked.splice(indexOfThread, 1);
-                api.sendMessage("Nhóm này đã được bỏ chặn!", threadID);
+                if (indexOfThread == -1) return api.sendMessage("Nhóm này chưa bị chặn!", threadID);
+                Thread.unban(threadID)
+                    .then(success => {
+                        //Clear from blocked
+                        __GLOBAL.threadBlocked.splice(indexOfThread, 1);
+                        if (success) return api.sendMessage("Nhóm này đã được bỏ chặn!", threadID);
+                        api.sendMessage("Không thể bỏ chặn nhóm này!", threadID);
+                    })
+
                 return;
             }
             return;
@@ -64,12 +69,14 @@ module.exports = function ({ api, modules, config, __GLOBAL, User }) {
                 __GLOBAL.confirm.push({
                     type: "ban:thread",
                     messageID: info.messageID,
+                    target: parseInt(threadID),
                     author: senderID
                 })
             });
             return;
 
         }
+
         // Ban user
         if (contentMessage.indexOf(`${prefix}ban`) == 0 && admins.includes(senderID)) {
 
@@ -93,7 +100,7 @@ module.exports = function ({ api, modules, config, __GLOBAL, User }) {
                             messageID: info.messageID,
                             target: {
                                 tag: event.mentions[mention],
-                                id: mention
+                                id: parseInt(mention)
                             },
                             author: senderID
                         })
@@ -117,10 +124,12 @@ module.exports = function ({ api, modules, config, __GLOBAL, User }) {
             return;
         }
         if (contentMessage == `${prefix}linh`) {
-            api.getUserInfo(event.senderID, function (err, ret) {
-                const info = ret[event.senderID]
-                api.sendMessage(`Chào cậu, ${info.name}`, threadID)
-            })
+            api.createPoll("Linh có xinh không? ", threadID, {
+                "Không": false,
+                "Có": true
+            }, (err) => {
+                if (err) return modules.log(err, 2)
+            });
             return;
         }
         if (contentMessage.indexOf(`${prefix}say`) == 0) {
