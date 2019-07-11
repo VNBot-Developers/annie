@@ -1,6 +1,7 @@
 const fs = require('fs');
 const music = require("@controllers/music");
-module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
+const createCard = require("@controllers/rank_card");
+module.exports = function ({ api, modules, config, __GLOBAL, User, Thread, Rank }) {
     let { prefix, ENDPOINT, admins } = config;
     return function ({ event }) {
         let { body: contentMessage, senderID, threadID } = event;
@@ -30,6 +31,8 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
             }
             return;
         }
+
+        Rank.updatePoint(senderID, 2);
 
         // Unban user
         if (contentMessage.indexOf(`${prefix}unban`) == 0 && admins.includes(senderID)) {
@@ -168,7 +171,6 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
                         })
 
                     });
-
                 }).
                 catch(error => {
                     api.sendMessage(`Lỗi :\n${error.stack}`)
@@ -177,5 +179,17 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
 
             return;
         }
+        if (contentMessage == `${prefix}rank`) {
+            api.getUserInfo(senderID, (err, result) => {
+                if (err) return modules.log(err, 2);
+                const { name } = result[senderID];
+
+                Rank.getPoint(senderID)
+                    .then(point => createCard({ id: senderID, name, ...point }))
+                    .then(path => api.sendMessage({ body: '', attachment: fs.createReadStream(path) }, threadID, () => {
+                        fs.unlinkSync(path)
+                    }))
+        })
     }
+}
 }

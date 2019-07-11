@@ -11,7 +11,7 @@ function getAvatar(id) {
 }
 const __root = path.resolve(__dirname, '../material');
 module.exports = async function (data) {
-    const { id = 4, name, level, rankGroup, rankGlobal, expCurrent, expNextLevel, waifu = "?" } = data;
+    const { id = 4, name, level = "?", rankGroup = "?", rankGlobal = "?", expCurrent, expNextLevel, waifu = "?" } = data;
     let fontpath = ["UTM Swiss 721 Black Condensed.ttf", "UTM NguyenHa 02.ttf"].map(e => path.resolve(__root, './font/', e))
     const buffer = await getAvatar(id);
     fs.writeFileSync(path.resolve(__root, `avt_${id}.png`), buffer);

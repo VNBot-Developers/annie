@@ -28,13 +28,16 @@
     "dotenv": "^6.2.0",
     "facebook-chat-api": "^1.6.1",
     "file-type": "^10.7.0",
+    "jimp": "^0.6.4",
     "md5": "^2.2.1",
+    "oauth": "^0.9.15",
     "pg": "^7.7.1",
     "pg-hstore": "^2.3.2",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "sequelize": "^6.0.0",
-    "sqlite3": "^4.0.9"
+    "sqlite3": "^4.0.9",
+    "text2png": "^2.1.0"
   },
   "devDependencies": {
     "link-module-alias": "^1.2.0"

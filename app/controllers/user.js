@@ -27,22 +27,20 @@ module.exports = function ({ models, api }) {
             where: {
                 uid
             }
-        }).then(function(user){
-            if(!user) return;
+        }).then(function (user) {
+            if (!user) return;
             return user.update({
                 block
             });
-        })
-        .then(function(){
+        }).then(function () {
             return true;
-        })
-        .catch(function(error){
+        }).catch(function (error) {
             logger(error, 2);
             return false;
         })
     }
 
-    function ban(uid){
+    function ban(uid) {
         return unban(uid, true);
     }
     return {
