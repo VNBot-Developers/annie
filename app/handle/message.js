@@ -1,4 +1,5 @@
 const fs = require('fs');
+const music = require("@controllers/music");
 module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
     let { prefix, ENDPOINT, admins } = config;
     return function ({ event }) {
@@ -19,7 +20,7 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
                 Thread.unban(threadID)
                     .then(success => {
                         if (!success) return api.sendMessage("Không thể bỏ chặn nhóm này!", threadID);
-                        api.sendMessage("Nhóm này đã được bỏ chặn!", threadID);                        
+                        api.sendMessage("Nhóm này đã được bỏ chặn!", threadID);
                         //Clear from blocked
                         __GLOBAL.threadBlocked.splice(indexOfThread, 1);
                         modules.log(threadID, 'Unban Thread');
@@ -138,12 +139,42 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
             });
             return;
         }
+
         if (contentMessage.indexOf(`${prefix}say`) == 0) {
 
             let text = contentMessage.slice(prefix.length + 3, contentMessage.length).trim();
-            modules.sendAttachment(ENDPOINT.GOOGLE_TTS + encodeURI(text), threadID, function (err) {
+            modules.sendAttachment(ENDPOINT.GOOGLE_TTS + encodeURI(text), threadID, '', function (err) {
                 if (err) modules.log(err, 2);
             })
+            return;
+        }
+        if (contentMessage.indexOf(`${prefix}music`) == 0) {
+
+            let query = contentMessage.slice(prefix.length + 5, contentMessage.length).trim();
+
+            modules.log(`Tìm kiếm bài hát: ${query}`);
+            music.search(query)
+                .then(function (result) {
+                    result.forEach(function (element, index) {
+                        api.sendMessage(`Bài ${element.name} của ${element.singer}`, threadID, function (error, info) {
+                            if (error) return modules.log(error, 2);
+                            __GLOBAL.confirm.push({
+                                type: "music",
+                                messageID: info.messageID,
+                                target: element,
+                                author: senderID
+                            })
+
+                        })
+
+                    });
+
+                }).
+                catch(error => {
+                    api.sendMessage(`Lỗi :\n${error.stack}`)
+                    modules.log(error, 2);
+                })
+
             return;
         }
     }

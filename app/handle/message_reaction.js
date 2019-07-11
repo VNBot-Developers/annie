@@ -1,3 +1,4 @@
+const music = require("@controllers/music");
 module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
     return function ({ event }) {
         const { confirm } = __GLOBAL;
@@ -29,10 +30,23 @@ module.exports = function ({ api, modules, config, __GLOBAL, User, Thread }) {
                                 body: `${confirmMessage.target.tag} đã bị ban!`,
                                 mentions: [confirmMessage.target]
                             }, threadID);
-                            __GLOBAL.userBlocked.push(confirmMessage.target.id);                            
+                            __GLOBAL.userBlocked.push(confirmMessage.target.id);
                             modules.log(confirmMessage.target.id, 'Ban User');
                         })
                     break;
+                }
+                case 'music': {
+                    const { target: { id, name, singer } } = confirmMessage;
+                    modules.log(`Phát bài hát '${name}' tại ${threadID}`);
+                    api.sendMessage('Đang tải về ⏬, vui lòng chờ trong giây lát.', threadID);
+                    music.getInfo(id)
+                        .then(function ({ name, singer, thumbnail, link }) {
+                            modules.sendAttachment(thumbnail, threadID);
+                            modules.sendAttachment(link, threadID, `Bài ${name} của ${singer} phải không?`);
+                        })
+                        .catch((error) => {
+                            modules.log(error, 2);
+                        })
                 }
             }
             //Xoa confirm
