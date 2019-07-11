@@ -10,7 +10,7 @@ module.exports = function (data, option) {
 	if (option == 2)
 		return console.log(chalk.red('[ ☠ ]:: ') + data.stack || `${data}`);
 	if (option == null || option == undefined)
-		return console.log(chalk.magenta('[ UwU ]: ') + data);
+		return console.log(chalk.magenta('[ UwU ]:: ') + data);
 	else
-		return console.log(chalk.magenta(`${option}: `) + data);
+		return console.log(chalk.magenta(`${option}:: `) + data);
 }
